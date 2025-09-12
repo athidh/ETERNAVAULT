@@ -9,7 +9,7 @@ const ledgerSchema = new mongoose.Schema({
     asset: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Asset',
-        // Not required because some actions might be user-level
+        
     },
     action: {
         type: String,
@@ -25,7 +25,7 @@ const ledgerSchema = new mongoose.Schema({
         required: true,
     },
 }, {
-    // We'll use the 'createdAt' field as our official timestamp
+    
     timestamps: { createdAt: true, updatedAt: false },
 });
 

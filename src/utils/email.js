@@ -15,7 +15,7 @@ const sendEmail = async (options) => {
         },
     });
 
-    // 2. Define the email options
+    //  Define the email 
     const mailOptions = {
         from: '"Eternavault" <no-reply@eternavault.com>',
         to: options.to,
@@ -23,7 +23,7 @@ const sendEmail = async (options) => {
         html: options.html,
     };
 
-    // 3. Actually send the email
+    // send mail
     let info = await transporter.sendMail(mailOptions);
 
     console.log('Message sent: %s', info.messageId);

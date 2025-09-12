@@ -6,7 +6,7 @@ const findLastHashForUser = async (userId) => {
     if (lastEntry) {
         return lastEntry.currentHash;
     }
-    // Return a genesis hash if no entries exist
+    // genesis hash 
     return '0000000000000000000000000000000000000000000000000000000000000000';
 };
 

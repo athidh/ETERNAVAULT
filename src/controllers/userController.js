@@ -2,7 +2,7 @@ const User = require('../models/user');
 const Asset = require('../models/asset');
 const bcrypt = require('bcryptjs');
 const generateToken = require('../utils/generateToken');
-const executorService = require('../services/executorService'); // We will create this later
+const executorService = require('../services/executorService');
 
 //    Register a new user
 const registerUser = async (req, res) => {
@@ -84,9 +84,7 @@ const addAsset = async (req, res) => {
     }
 };
 
-// @desc    Get all assets for a user
-// @route   GET /api/users/assets
-// @access  Private
+//   Get all assets for a user
 const getUserAssets = async (req, res) => {
     try {
         const assets = await Asset.find({ owner: req.user.id });
@@ -97,14 +95,12 @@ const getUserAssets = async (req, res) => {
 };
 
 
-// @desc    Trigger the post-death protocol (ADMIN ONLY for demo)
-// @route   POST /api/users/:id/confirm-death
-// @access  Private/Admin
+//  Trigger the post-death protocol (ADMIN ONLY for demo)
+
 const confirmDeath = async (req, res) => {
     const { id } = req.params;
     try {
-        // In a real app, you'd have strong admin authentication here.
-        // The controller's job is just to receive the request and call the service.
+        
         await executorService.initiateProtocol(id);
         res.status(200).json({ message: `Protocol initiated for user ${id}.` });
     } catch (error) {

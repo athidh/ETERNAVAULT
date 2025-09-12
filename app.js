@@ -1,13 +1,15 @@
 const express = require('express');
+const userRoutes = require('./src/routes/user'); 
 const app = express();
 
-app.use(express.json());
 
 app.use((req, res, next) => {
-    console.log(`Incoming Request: ${req.method} ${req.path}`);
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
     next();
 });
 
+
+app.use(express.json());
 
 app.get('/', (req, res) => {
     res.status(200).json({
@@ -15,6 +17,9 @@ app.get('/', (req, res) => {
         status: "healthy"
     });
 });
+
+
+app.use('/routes/user', userRoutes);
 
 
 module.exports = app;

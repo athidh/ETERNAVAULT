@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Eternavault</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="light-theme">
+    <div id="toastContainer"></div>
+
+    <div class="modal-overlay" id="deleteModal" style="display: none;">
+        <div class="modal-content card">
+            <h3>Confirm Deletion</h3>
+            <p>Are you sure you want to remove this asset? This action will be permanently recorded in the ledger and cannot be undone.</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelDelete">Cancel</button>
+                <button class="btn btn-danger" id="confirmDelete">Confirm Removal</button>
+            </div>
+        </div>
+    </div>
+
+    <header class="top-nav">
+        <div class="nav-container">
+            <div class="header-logo">
+                <span class="logo-icon">🏛️</span>
+                <span class="logo-text">Eternavault</span>
+            </div>
+            <nav class="main-nav">
+                <a href="dashboard.html" class="active">Dashboard</a>
+                <a href="ledger.html">Ledger</a>
+                <a href="index.html" id="logoutBtn" class="nav-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1 id="welcomeMessage">Dashboard</h1>
+            <p>Manage your registered digital assets and legacy contacts.</p>
+        </div>
+
+        <div class="stats-bar">
+             <div class="stat-item card">
+                <div class="stat-icon-wrapper icon-assets"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="stat-text">
+                    <span id="totalAssetsStat">0</span>
+                    <p>Assets Secured</p>
+                </div>
+            </div>
+            <div class="stat-item card">
+                <div class="stat-icon-wrapper icon-contacts"><i class="fa-solid fa-users"></i></div>
+                <div class="stat-text">
+                    <span id="totalContactsStat">0</span>
+                    <p>Legacy Contacts</p>
+                </div>
+            </div>
+            <div class="stat-item card">
+                <div class="stat-icon-wrapper icon-activity"><i class="fa-solid fa-clock"></i></div>
+                <div class="stat-text">
+                    <span id="lastActivityStat">N/A</span>
+                    <p>Last Activity</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="form-section card">
+                 <h3><i class="fa-solid fa-circle-plus"></i> Register a New Digital Asset</h3>
+                <form id="assetForm">
+                    <div class="form-group">
+                        <label>Select a Platform</label>
+                        <div class="platform-selector" id="platformSelector">
+                            <div class="platform-card" data-platform="Facebook"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" alt="Facebook"><span>Facebook</span></div>
+                            <div class="platform-card" data-platform="Instagram"><img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram"><span>Instagram</span></div>
+                            <div class="platform-card" data-platform="X (Twitter)"><img src="https://upload.wikimedia.org/wikipedia/commons/5/57/X_logo_2023_%28white%29.png" alt="X"><span>X (Twitter)</span></div>
+                            <div class="platform-card" data-platform="Snapchat"><img src="https://upload.wikimedia.org/wikipedia/en/c/c4/Snapchat_logo.svg" alt="Snapchat"><span>Snapchat</span></div>
+                            <div class="platform-card" data-platform="LinkedIn"><img src="https://upload.wikimedia.org/wikipedia/commons/8/81/LinkedIn_icon.svg" alt="LinkedIn"><span>LinkedIn</span></div>
+                            <div class="platform-card" data-platform="Other"><i class="fa-solid fa-globe"></i><span>Other</span></div>
+                        </div>
+                        <input type="hidden" id="platform" required>
+                    </div>
+                    <div class="form-group" id="otherPlatformGroup" style="display: none;">
+                        <label for="otherPlatform">Custom Platform Name</label>
+                        <input type="text" id="otherPlatform">
+                    </div>
+                    <div class="form-group">
+                        <label for="url">Profile or Asset URL</label>
+                        <input type="url" id="url" required placeholder="https://...">
+                    </div>
+                    <div class="form-group">
+                        <label for="action">Posthumous Action</label>
+                        <select id="action" required>
+                            <option value="">-- Select an Action --</option>
+                            <option value="Memorialize">Memorialize Account</option>
+                            <option value="Grant Access">Grant Access to Contact</option>
+                            <option value="Request Deletion">Request Account Deletion</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="legacyContact">Legacy Contact's Email</label>
+                        <input type="email" id="legacyContact" required placeholder="contact@example.com">
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Asset to Ledger</button>
+                </form>
+            </div>
+            <div class="assets-section card">
+                <h3>Your Registered Assets</h3>
+                <div id="assetList" class="asset-list-container">
+                    </div>
+            </div>
+        </div>
+
+        <div class="protocol-section card">
+            <h3><i class="fa-solid fa-gavel"></i> Initiate Legacy Protocol</h3>
+            <p class="protocol-description">This action is for an authorized executor to begin the digital asset transfer process upon the account holder's passing. A valid death certificate is required.</p>
+            <form id="protocolForm">
+                <div class="protocol-grid">
+                    <div class="form-group">
+                        <label for="decedentName">Decedent's Full Name</label>
+                        <input type="text" id="decedentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="deathCertificate">Upload Death Certificate (PDF)</label>
+                        <input type="file" id="deathCertificate" accept=".pdf" required hidden>
+                        <label for="deathCertificate" class="file-upload-label">
+                            <i class="fa-solid fa-upload"></i>
+                            <span id="fileName">Choose File...</span>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-danger" id="submitVerificationBtn">
+                    <span class="btn-text"><i class="fa-solid fa-file-invoice"></i> Submit for Verification</span>
+                    <span class="spinner"></span>
+                </button>
+            </form>
+            <div class="protocol-status" id="protocolStatusContainer">
+                <strong>Status:</strong> <span id="protocolStatus" class="status-inactive">Awaiting Submission</span>
+            </div>
+            <div id="downloadCertificateContainer" style="display: none; margin-top: 1.5rem;">
+                 <button class="btn btn-primary" id="downloadCertificateBtn"><i class="fa-solid fa-download"></i> Download Confirmation Certificate</button>
+            </div>
+        </div>
+    </main>
+    
+    <script src="script.js"></script>
+</body>
+</html>

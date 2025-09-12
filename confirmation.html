@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Death Verification - Eternavault</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🏛️</span>
+                <span class="logo-text">Eternavault</span>
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Return to Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="form-page-container">
+        <div class="form-card">
+            <div class="form-header">
+                <h1>Death Verification & Protocol Initiation</h1>
+                <p>Authorized Personnel Only</p>
+            </div>
+            <form onsubmit="return confirmAction()">
+                <div class="form-group">
+                    <label for="decedent-name">Decedent's Full Legal Name</label>
+                    <input type="text" id="decedent-name" name="decedent-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="decedent-id">Official Identification Number</label>
+                    <input type="text" id="decedent-id" name="decedent-id" required>
+                </div>
+                 <div class="form-group">
+                    <label for="death-certificate">Upload Scanned Death Certificate (PDF)</label>
+                    <input type="file" id="death-certificate" name="death-certificate" accept=".pdf" required>
+                </div>
+                <div class="warning-box">
+                    <p>This action is irreversible and will execute the decedent's final wishes. Verify all information is accurate before proceeding.</p>
+                </div>
+                <button type="submit" class="form-button btn-danger" style="margin-top: 1.5rem;">Initiate Protocol</button>
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer">
+         <p>&copy; 2025 Eternavault Digital Inheritance Authority. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        function confirmAction() {
+            const isConfirmed = confirm("WARNING:\n\nYou are about to initiate the digital inheritance protocol. This action is final and cannot be undone.\n\nAre you absolutely sure you want to proceed?");
+            if (isConfirmed) {
+                // In a real application, this would submit the form.
+                // For this demo, we can show an alert.
+                alert("Protocol Initiated. The decedent's vault is now being processed.");
+                return true; // Allows form submission
+            } else {
+                return false; // Prevents form submission
+            }
+        }
+    </script>
+</body>
+</html>

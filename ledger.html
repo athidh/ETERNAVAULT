@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ledger - Eternavault</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="light-theme">
+    
+    <header class="top-nav">
+        <div class="nav-container">
+            <div class="header-logo">
+                <span class="logo-icon">🏛️</span>
+                <span class="logo-text">Eternavault</span>
+            </div>
+            <nav class="main-nav">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="ledger.html" class="active">Ledger</a>
+                <a href="index.html" id="logoutBtn" class="nav-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Immutable Event Ledger</h1>
+            <p>This is a permanent, read-only record of all actions on your account.</p>
+        </div>
+       
+        <div class="ledger-table-container card">
+            <table class="ledger-table">
+                <thead>
+                    <tr>
+                        <th>Block #</th>
+                        <th>Timestamp</th>
+                        <th>Event Description</th>
+                        <th>Hash</th>
+                    </tr>
+                </thead>
+                <tbody id="ledgerBody">
+                    </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

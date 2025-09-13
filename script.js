@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- LOGIN PAGE (`login.html`) ---
-    if (page === 'login.html' || page === '') {
+    if (page === 'login.html') {
         const loginForm = document.getElementById('loginForm');
         
         if (loginForm) {
@@ -136,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Login attempt:', { email, password: '***' });
                 
                 try {
+                    console.log('Making API request to:', `${API_BASE_URL}/routes/user/login`);
                     const response = await apiRequest('/routes/user/login', {
                         method: 'POST',
                         body: JSON.stringify({ email, password })
@@ -160,7 +161,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     }, 1000);
                     
                 } catch (error) {
-                    console.error('Login error:', error);
+                    console.error('Login error details:', {
+                        message: error.message,
+                        stack: error.stack,
+                        name: error.name
+                    });
                     showToast(error.message || 'Login failed', 'error');
                 }
             });

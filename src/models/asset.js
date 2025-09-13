@@ -21,8 +21,7 @@ const assetSchema = new mongoose.Schema({
     instruction: {
         type: String,
         required: true,
-    
-        enum: ['Memorialize', 'Grant Access for Final Post', 'Request Deletion']
+        enum: ['Memorialize', 'Grant Access', 'Request Deletion']
     },
     legacyContactEmail: {
         type: String,

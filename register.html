@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Portal - Eternavault</title>
+    <title>Create Account - Eternavault</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -134,8 +134,8 @@
             transform: scale(1.1);
         }
 
-        /* --- Login Section --- */
-        .login-section {
+        /* --- Registration Section --- */
+        .register-section {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -143,7 +143,7 @@
             text-align: center;
         }
         
-        .login-content {
+        .register-content {
             max-width: 500px;
             background-color: var(--card-color);
             padding: 3rem;
@@ -153,7 +153,7 @@
             border: 1px solid rgba(100, 255, 218, 0.1);
         }
         
-        .login-content h1 {
+        .register-content h1 {
             font-size: clamp(1.5rem, 3vw, 2.5rem);
             font-weight: 700;
             margin-bottom: 1rem;
@@ -161,7 +161,7 @@
             font-family: "Amasis MT Pro";
         }
         
-        .login-content p {
+        .register-content p {
             font-size: 1.1rem;
             margin-bottom: 2rem;
             color: var(--text-secondary);
@@ -226,6 +226,18 @@
             margin-right: 0.5rem;
         }
 
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            margin-top: 1rem;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--accent);
+            color: var(--dark-bg);
+        }
+
         /* --- Toast Notifications --- */
         #toastContainer {
             position: fixed;
@@ -270,7 +282,7 @@
 
         /* --- Responsive Design --- */
         @media (max-width: 768px) {
-            .login-content {
+            .register-content {
                 margin: 1rem;
                 padding: 2rem;
             }
@@ -290,6 +302,7 @@
             <div class="logo"><a href="landing_theme.html"><span class="first-letter">E</span>TERNAVAULT</a></div>
             <ul class="nav-menu" id="nav-menu">
                 <li><a href="landing_theme.html">Home</a></li>
+                <li><a href="login.html">Login</a></li>
                 <li>
                     <button id="theme-toggle" title="Toggle Theme">
                         <i class="fa-solid fa-circle-half-stroke"></i>
@@ -300,27 +313,41 @@
     </header>
 
     <main>
-        <section class="login-section">
-            <div class="container login-content">
-                <h1>Secure Portal Sign-In</h1>
-                <p>Access the official digital asset management portal.</p>
-                <form id="loginForm">
+        <section class="register-section">
+            <div class="container register-content">
+                <h1>Create Your Account</h1>
+                <p>Join Eternavault to secure your digital legacy.</p>
+                <form id="registerForm">
                     <div class="form-group">
-                        <label for="email">User Email Address</label>
-                        <input type="email" id="email" placeholder="Enter your official email" required>
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="Enter your email" required>
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
                         <input type="password" id="password" placeholder="Enter your password" required>
                     </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+                    </div>
                     <button type="submit" class="btn">
-                        <i class="fa-solid fa-right-to-bracket"></i> Sign In
+                        <i class="fa-solid fa-user-plus"></i> Create Account
                     </button>
                 </form>
                 <div style="text-align: center; margin-top: 1rem;">
-                    <p style="color: var(--text-secondary);">Don't have an account?</p>
-                    <a href="register.html" class="btn" style="background: transparent; border: 2px solid var(--accent); color: var(--accent); margin-top: 0.5rem;">
-                        <i class="fa-solid fa-user-plus"></i> Create Account
+                    <p style="color: var(--text-secondary);">Already have an account?</p>
+                    <a href="login.html" class="btn btn-secondary">
+                        <i class="fa-solid fa-right-to-bracket"></i> Sign In
+                    </a>
+                </div>
+                <div style="text-align: center; margin-top: 1rem;">
+                    <p style="color: var(--text-secondary);">Are you a nominee?</p>
+                    <a href="nominee_register.html" class="btn btn-secondary">
+                        <i class="fa-solid fa-user-plus"></i> Register as Nominee
                     </a>
                 </div>
             </div>
@@ -331,6 +358,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const themeToggle = document.getElementById('theme-toggle');
             const navbar = document.getElementById('navbar');
+            const registerForm = document.getElementById('registerForm');
 
             // --- Theme Toggle ---
             const currentTheme = localStorage.getItem('theme') || 'dark';
@@ -350,9 +378,95 @@
                     navbar.classList.remove('scrolled');
                 }
             });
+
+            // --- Toast Notification Function ---
+            const showToast = (message, type = 'success') => {
+                const container = document.getElementById('toastContainer');
+                if (!container) return;
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                const icon = type === 'success' ? 'fa-check-circle' : 'fa-times-circle';
+                toast.innerHTML = `<i class="fa-solid ${icon}"></i> ${message}`;
+                container.appendChild(toast);
+                setTimeout(() => toast.remove(), 4000);
+            };
+
+            // --- API Configuration ---
+            const API_BASE_URL = 'https://eternavault.onrender.com';
+
+            // --- API Helper Functions ---
+            const apiRequest = async (endpoint, options = {}) => {
+                const token = localStorage.getItem('token');
+                const defaultHeaders = {
+                    'Content-Type': 'application/json',
+                };
+                
+                if (token) {
+                    defaultHeaders['Authorization'] = `Bearer ${token}`;
+                }
+
+                const config = {
+                    headers: { ...defaultHeaders, ...options.headers },
+                    ...options
+                };
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.message || 'API request failed');
+                    }
+                    
+                    return data;
+                } catch (error) {
+                    console.error('API Error:', error);
+                    throw error;
+                }
+            };
+
+            // --- Registration Form Handler ---
+            if (registerForm) {
+                registerForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('name').value;
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password').value;
+                    const confirmPassword = document.getElementById('confirmPassword').value;
+                    
+                    if (password !== confirmPassword) {
+                        showToast('Passwords do not match', 'error');
+                        return;
+                    }
+                    
+                    try {
+                        const response = await apiRequest('/routes/user/register', {
+                            method: 'POST',
+                            body: JSON.stringify({ name, email, password })
+                        });
+                        
+                        // Store token and user info
+                        localStorage.setItem('token', response.token);
+                        localStorage.setItem('loggedInUser', JSON.stringify({ 
+                            _id: response._id,
+                            name: response.name,
+                            email: response.email, 
+                            userType: 'user' 
+                        }));
+                        
+                        showToast('Account created successfully!', 'success');
+                        
+                        // Redirect to dashboard after successful registration
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 1000);
+                        
+                    } catch (error) {
+                        showToast(error.message || 'Registration failed', 'error');
+                    }
+                });
+            }
         });
     </script>
-    <script src="script.js"></script>
-
 </body>
 </html>

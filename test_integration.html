@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integration Test - Eternavault</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #64ffda;
+            color: #0a192f;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #52d6bc;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background: #f0f0f0;
+            border-left: 4px solid #64ffda;
+        }
+        .error {
+            border-left-color: #ff4757;
+            background: #ffe6e6;
+        }
+        .success {
+            border-left-color: #2ed573;
+            background: #e6ffe6;
+        }
+    </style>
+</head>
+<body>
+    <h1>Eternavault Backend Integration Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Backend Health Check</h2>
+        <button class="test-button" onclick="testBackendHealth()">Test Backend Connection</button>
+        <div id="healthResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. User Registration Test</h2>
+        <input type="text" id="testName" placeholder="John Doe" style="padding: 8px; margin: 5px; width: 200px;">
+        <input type="email" id="testEmail" placeholder="test@example.com" style="padding: 8px; margin: 5px; width: 200px;">
+        <input type="password" id="testPassword" placeholder="password123" style="padding: 8px; margin: 5px; width: 200px;">
+        <button class="test-button" onclick="testRegistration()">Test Registration</button>
+        <div id="regResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. User Login Test</h2>
+        <button class="test-button" onclick="testLogin()">Test Login</button>
+        <div id="loginResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Asset Management Test</h2>
+        <button class="test-button" onclick="testAddAsset()">Test Add Asset</button>
+        <button class="test-button" onclick="testGetAssets()">Test Get Assets</button>
+        <div id="assetResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Nominee Registration Test</h2>
+        <input type="text" id="nomineeName" placeholder="Nominee Name" style="padding: 8px; margin: 5px; width: 200px;">
+        <input type="email" id="nomineeEmail" placeholder="nominee@example.com" style="padding: 8px; margin: 5px; width: 200px;">
+        <input type="password" id="nomineePassword" placeholder="password123" style="padding: 8px; margin: 5px; width: 200px;">
+        <select id="nomineeRelationship" style="padding: 8px; margin: 5px; width: 200px;">
+            <option value="Spouse">Spouse</option>
+            <option value="Child">Child</option>
+            <option value="Parent">Parent</option>
+            <option value="Sibling">Sibling</option>
+            <option value="Friend">Friend</option>
+            <option value="Other">Other</option>
+        </select>
+        <button class="test-button" onclick="testNomineeRegistration()">Test Nominee Registration</button>
+        <div id="nomineeRegResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>6. Nominee Login Test</h2>
+        <button class="test-button" onclick="testNomineeLogin()">Test Nominee Login</button>
+        <div id="nomineeLoginResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>7. Nominee Assets Test</h2>
+        <button class="test-button" onclick="testNomineeAssets()">Test Get Nominee Assets</button>
+        <div id="nomineeAssetsResult" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://eternavault.onrender.com';
+        let authToken = null;
+        let nomineeToken = null;
+
+        async function apiRequest(endpoint, options = {}) {
+            const defaultHeaders = {
+                'Content-Type': 'application/json',
+            };
+            
+            if (authToken) {
+                defaultHeaders['Authorization'] = `Bearer ${authToken}`;
+            }
+
+            const config = {
+                headers: { ...defaultHeaders, ...options.headers },
+                ...options
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || 'API request failed');
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        function showResult(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `result ${isError ? 'error' : 'success'}`;
+            element.textContent = message;
+        }
+
+        async function testBackendHealth() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/`);
+                const data = await response.json();
+                showResult('healthResult', `✅ Backend is healthy: ${data.message}`, false);
+            } catch (error) {
+                showResult('healthResult', `❌ Backend connection failed: ${error.message}`, true);
+            }
+        }
+
+        async function testRegistration() {
+            const name = document.getElementById('testName').value || 'Test User';
+            const email = document.getElementById('testEmail').value || 'test@example.com';
+            const password = document.getElementById('testPassword').value || 'password123';
+            
+            try {
+                const response = await apiRequest('/routes/user/register', {
+                    method: 'POST',
+                    body: JSON.stringify({ name, email, password })
+                });
+                showResult('regResult', `✅ Registration successful: ${response.name} (${response.email})`, false);
+            } catch (error) {
+                showResult('regResult', `❌ Registration failed: ${error.message}`, true);
+            }
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('testEmail').value || 'test@example.com';
+            const password = document.getElementById('testPassword').value || 'password123';
+            
+            try {
+                const response = await apiRequest('/routes/user/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+                authToken = response.token;
+                showResult('loginResult', `✅ Login successful: ${response.name} (${response.email})`, false);
+            } catch (error) {
+                showResult('loginResult', `❌ Login failed: ${error.message}`, true);
+            }
+        }
+
+        async function testAddAsset() {
+            if (!authToken) {
+                showResult('assetResult', '❌ Please login first', true);
+                return;
+            }
+
+            try {
+                const assetData = {
+                    platform: 'Test Platform',
+                    profileUrl: 'https://example.com/test',
+                    instruction: 'Memorialize',
+                    legacyContactEmail: 'contact@example.com'
+                };
+
+                const response = await apiRequest('/routes/user/assets', {
+                    method: 'POST',
+                    body: JSON.stringify(assetData)
+                });
+                showResult('assetResult', `✅ Asset added successfully: ${response.platform}`, false);
+            } catch (error) {
+                showResult('assetResult', `❌ Add asset failed: ${error.message}`, true);
+            }
+        }
+
+        async function testGetAssets() {
+            if (!authToken) {
+                showResult('assetResult', '❌ Please login first', true);
+                return;
+            }
+
+            try {
+                const assets = await apiRequest('/routes/user/assets');
+                showResult('assetResult', `✅ Retrieved ${assets.length} assets successfully`, false);
+            } catch (error) {
+                showResult('assetResult', `❌ Get assets failed: ${error.message}`, true);
+            }
+        }
+
+        async function testNomineeRegistration() {
+            const name = document.getElementById('nomineeName').value || 'Test Nominee';
+            const email = document.getElementById('nomineeEmail').value || 'nominee@example.com';
+            const password = document.getElementById('nomineePassword').value || 'password123';
+            const relationship = document.getElementById('nomineeRelationship').value || 'Friend';
+            
+            try {
+                const response = await apiRequest('/routes/nominee/register', {
+                    method: 'POST',
+                    body: JSON.stringify({ name, email, password, relationship })
+                });
+                showResult('nomineeRegResult', `✅ Nominee registration successful:\n${JSON.stringify(response, null, 2)}`, false);
+            } catch (error) {
+                showResult('nomineeRegResult', `❌ Nominee registration failed:\n${JSON.stringify(error.message, null, 2)}`, true);
+            }
+        }
+
+        async function testNomineeLogin() {
+            const email = document.getElementById('nomineeEmail').value || 'nominee@example.com';
+            const password = document.getElementById('nomineePassword').value || 'password123';
+            
+            try {
+                const response = await apiRequest('/routes/nominee/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+                nomineeToken = response.token;
+                showResult('nomineeLoginResult', `✅ Nominee login successful:\n${JSON.stringify(response, null, 2)}`, false);
+            } catch (error) {
+                showResult('nomineeLoginResult', `❌ Nominee login failed:\n${JSON.stringify(error.message, null, 2)}`, true);
+            }
+        }
+
+        async function testNomineeAssets() {
+            if (!nomineeToken) {
+                showResult('nomineeAssetsResult', '❌ Please login as nominee first', true);
+                return;
+            }
+
+            try {
+                const assets = await apiRequest('/routes/nominee/assets', {
+                    headers: {
+                        'Authorization': `Bearer ${nomineeToken}`
+                    }
+                });
+                showResult('nomineeAssetsResult', `✅ Retrieved ${assets.length} nominee assets successfully:\n${JSON.stringify(assets, null, 2)}`, false);
+            } catch (error) {
+                showResult('nomineeAssetsResult', `❌ Get nominee assets failed:\n${JSON.stringify(error.message, null, 2)}`, true);
+            }
+        }
+
+        // Auto-test backend health on page load
+        window.onload = () => {
+            testBackendHealth();
+        };
+    </script>
+</body>
+</html>

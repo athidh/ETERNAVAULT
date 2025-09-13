@@ -226,16 +226,64 @@
             margin-right: 0.5rem;
         }
 
+        /* --- Toast Notifications --- */
+        #toastContainer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+
+        .toast {
+            background-color: var(--card-color);
+            color: var(--text-primary);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            border-left: 4px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 300px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .toast.error {
+            border-left-color: #ff4757;
+        }
+
+        .toast.success {
+            border-left-color: #2ed573;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
         /* --- Responsive Design --- */
         @media (max-width: 768px) {
             .login-content {
                 margin: 1rem;
                 padding: 2rem;
             }
+            
+            .toast {
+                min-width: 250px;
+                right: 10px;
+            }
         }
     </style>
 </head>
 <body data-theme="dark">
+    <div id="toastContainer"></div>
 
     <header class="navbar" id="navbar">
         <div class="container nav-container">
@@ -254,7 +302,7 @@
     <main>
         <section class="login-section">
             <div class="container login-content">
-                <h1>Nominee Portal Sign-In</h1>
+                <h1>Nominee Portal</h1>
                 <p>Access the official digital asset management portal as a nominee.</p>
                 <form id="loginForm">
                     <div class="form-group">
@@ -269,6 +317,54 @@
                         <i class="fa-solid fa-right-to-bracket"></i> Sign In
                     </button>
                 </form>
+                <div style="text-align: center; margin-top: 1rem;">
+                    <p style="color: var(--text-secondary);">New nominee?</p>
+                    <a href="nominee_register.html" class="btn" style="background: transparent; border: 2px solid var(--accent); color: var(--accent); margin-top: 0.5rem; text-decoration: none;">
+                        <i class="fa-solid fa-user-plus"></i> Register as Nominee
+                    </a>
+                </div>
+                
+                <form id="registerForm" style="display: none; margin-top: 2rem;">
+                    <h2 style="color: var(--accent); margin-bottom: 1rem;">Nominee Registration</h2>
+                    <div class="form-group">
+                        <label for="regName">Full Name</label>
+                        <input type="text" id="regName" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail">Email Address</label>
+                        <input type="email" id="regEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Password</label>
+                        <input type="password" id="regPassword" placeholder="Enter your password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regConfirmPassword">Confirm Password</label>
+                        <input type="password" id="regConfirmPassword" placeholder="Confirm your password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="relationship">Relationship to Deceased</label>
+                        <select id="relationship" required>
+                            <option value="">-- Select Relationship --</option>
+                            <option value="Spouse">Spouse</option>
+                            <option value="Child">Child</option>
+                            <option value="Parent">Parent</option>
+                            <option value="Sibling">Sibling</option>
+                            <option value="Friend">Friend</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone Number (Optional)</label>
+                        <input type="tel" id="phoneNumber" placeholder="Enter your phone number">
+                    </div>
+                    <button type="submit" class="btn">
+                        <i class="fa-solid fa-user-plus"></i> Register as Nominee
+                    </button>
+                    <button type="button" id="showLoginForm" class="btn" style="background: transparent; border: 2px solid var(--accent); color: var(--accent); margin-top: 0.5rem; width: 100%;">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Login
+                    </button>
+                </form>
             </div>
         </section>
     </main>
@@ -277,6 +373,56 @@
         document.addEventListener('DOMContentLoaded', () => {
             const themeToggle = document.getElementById('theme-toggle');
             const navbar = document.getElementById('navbar');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const showRegisterBtn = document.getElementById('showRegisterForm');
+            const showLoginBtn = document.getElementById('showLoginForm');
+
+            // --- API Configuration ---
+            const API_BASE_URL = 'https://eternavault.onrender.com';
+
+            // --- Toast Notification Function ---
+            const showToast = (message, type = 'success') => {
+                const container = document.getElementById('toastContainer');
+                if (!container) return;
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                const icon = type === 'success' ? 'fa-check-circle' : 'fa-times-circle';
+                toast.innerHTML = `<i class="fa-solid ${icon}"></i> ${message}`;
+                container.appendChild(toast);
+                setTimeout(() => toast.remove(), 4000);
+            };
+
+            // --- API Helper Functions ---
+            const apiRequest = async (endpoint, options = {}) => {
+                const token = localStorage.getItem('nomineeToken');
+                const defaultHeaders = {
+                    'Content-Type': 'application/json',
+                };
+                
+                if (token) {
+                    defaultHeaders['Authorization'] = `Bearer ${token}`;
+                }
+
+                const config = {
+                    headers: { ...defaultHeaders, ...options.headers },
+                    ...options
+                };
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.message || 'API request failed');
+                    }
+                    
+                    return data;
+                } catch (error) {
+                    console.error('API Error:', error);
+                    throw error;
+                }
+            };
 
             // --- Theme Toggle ---
             const currentTheme = localStorage.getItem('theme') || 'dark';
@@ -296,6 +442,110 @@
                     navbar.classList.remove('scrolled');
                 }
             });
+
+            // --- Toggle between login and register forms ---
+            if (showRegisterBtn) {
+                showRegisterBtn.addEventListener('click', () => {
+                    loginForm.style.display = 'none';
+                    registerForm.style.display = 'block';
+                    showRegisterBtn.parentElement.style.display = 'none';
+                });
+            }
+            
+            if (showLoginBtn) {
+                showLoginBtn.addEventListener('click', () => {
+                    registerForm.style.display = 'none';
+                    loginForm.style.display = 'block';
+                    showRegisterBtn.parentElement.style.display = 'block';
+                });
+            }
+
+            // --- Nominee Login Form Handler ---
+            if (loginForm) {
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password').value;
+                    
+                    try {
+                        const response = await apiRequest('/routes/nominee/login', {
+                            method: 'POST',
+                            body: JSON.stringify({ email, password })
+                        });
+                        
+                        // Store token and nominee info
+                        localStorage.setItem('nomineeToken', response.token);
+                        localStorage.setItem('loggedInNominee', JSON.stringify({ 
+                            _id: response._id,
+                            name: response.name,
+                            email: response.email,
+                            relationship: response.relationship,
+                            userType: 'nominee' 
+                        }));
+                        
+                        showToast('Login successful!', 'success');
+                        
+                        // Redirect to nominee dashboard
+                        setTimeout(() => {
+                            window.location.href = 'nominee_dashboard.html';
+                        }, 1000);
+                        
+                    } catch (error) {
+                        showToast(error.message || 'Login failed', 'error');
+                    }
+                });
+            }
+
+            // --- Nominee Registration Form Handler ---
+            if (registerForm) {
+                registerForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('regName').value;
+                    const email = document.getElementById('regEmail').value;
+                    const password = document.getElementById('regPassword').value;
+                    const confirmPassword = document.getElementById('regConfirmPassword').value;
+                    const relationship = document.getElementById('relationship').value;
+                    const phoneNumber = document.getElementById('phoneNumber').value;
+                    
+                    if (password !== confirmPassword) {
+                        showToast('Passwords do not match', 'error');
+                        return;
+                    }
+                    
+                    try {
+                        const response = await apiRequest('/routes/nominee/register', {
+                            method: 'POST',
+                            body: JSON.stringify({ 
+                                name, 
+                                email, 
+                                password, 
+                                relationship,
+                                phoneNumber 
+                            })
+                        });
+                        
+                        // Store token and nominee info
+                        localStorage.setItem('nomineeToken', response.token);
+                        localStorage.setItem('loggedInNominee', JSON.stringify({ 
+                            _id: response._id,
+                            name: response.name,
+                            email: response.email,
+                            relationship: response.relationship,
+                            userType: 'nominee' 
+                        }));
+                        
+                        showToast('Nominee registration successful!', 'success');
+                        
+                        // Redirect to nominee dashboard
+                        setTimeout(() => {
+                            window.location.href = 'nominee_dashboard.html';
+                        }, 1000);
+                        
+                    } catch (error) {
+                        showToast(error.message || 'Registration failed', 'error');
+                    }
+                });
+            }
         });
     </script>
 

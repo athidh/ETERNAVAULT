@@ -124,6 +124,21 @@
         .nav-menu a:hover {
             color: var(--accent);
         }
+
+        .register-btn {
+            background-color: var(--accent) !important;
+            color: var(--dark-bg) !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 5px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .register-btn:hover {
+            background-color: var(--accent-hover) !important;
+            transform: scale(1.05) !important;
+            color: var(--dark-bg) !important;
+        }
         
         #theme-toggle {
             background: none;
@@ -452,10 +467,20 @@
                         <a href="nominee.html">Nominee Login</a>
                     </div>
                 </li>
+                <li class="nav-dropdown">
+                    <a href="register.html" class="register-btn">Register</a>
+                    <div class="nav-dropdown-content">
+                        <a href="register.html">User Registration</a>
+                        <a href="nominee_register.html">Nominee Registration</a>
+                    </div>
+                </li>
                 <li>
                     <button id="theme-toggle" title="Toggle Theme">
                         <i class="fa-solid fa-circle-half-stroke"></i>
                     </button>
+                </li>
+                <li style="opacity: 0.1; transition: opacity 0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.1'">
+                    <a href="admin_access.html" style="font-size: 0.8rem; color: var(--text-secondary);" title="Admin Access">⚙</a>
                 </li>
             </ul>
             <button class="menu-toggle" id="menu-toggle" aria-label="Open menu">

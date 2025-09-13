@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Nominee Authentication - Eternavault</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --dark-bg: #0a192f;
+            --light-bg: #f0f2f5;
+            --dark-card: #112240;
+            --light-card: #ffffff;
+            --accent: #64ffda;
+            --accent-hover: #52d6bc;
+            --text-dark: #ccd6f6;
+            --text-light: #333;
+            --text-muted-dark: #8892b0;
+            --text-muted-light: #6c757d;
+            --shadow-dark: rgba(2, 12, 27, 0.7);
+            --shadow-light: rgba(100, 100, 111, 0.2);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: var(--dark-bg);
+            --card-color: var(--dark-card);
+            --text-primary: var(--text-dark);
+            --text-secondary: var(--text-muted-dark);
+            --shadow-color: var(--shadow-dark);
+        }
+
+        [data-theme="light"] {
+            --bg-color: var(--light-bg);
+            --card-color: var(--light-card);
+            --text-primary: var(--text-light);
+            --text-secondary: var(--text-muted-light);
+            --shadow-color: var(--shadow-light);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .debug-section {
+            background-color: var(--card-color);
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px -5px var(--shadow-color);
+        }
+
+        .debug-section h2 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--bg-color);
+            border: 2px solid var(--accent);
+            border-radius: 5px;
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            background-color: var(--accent);
+            color: var(--dark-bg);
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--accent);
+            color: var(--dark-bg);
+        }
+
+        .result {
+            background-color: var(--bg-color);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            border-left: 4px solid var(--accent);
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .result.error {
+            border-left-color: #ff4757;
+            color: #ff4757;
+        }
+
+        .result.success {
+            border-left-color: #2ed573;
+            color: #2ed573;
+        }
+
+        .info-box {
+            background-color: rgba(100, 255, 218, 0.1);
+            border: 1px solid var(--accent);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .info-box h3 {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="container">
+        <h1 style="text-align: center; color: var(--accent); margin-bottom: 2rem;">
+            <i class="fa-solid fa-bug"></i> Nominee Authentication Debug
+        </h1>
+
+        <div class="info-box">
+            <h3><i class="fa-solid fa-info-circle"></i> Debug Information</h3>
+            <p>This page helps debug nominee authentication issues. Follow the steps below to identify and fix the problem.</p>
+        </div>
+
+        <!-- Step 1: Register Nominee -->
+        <div class="debug-section">
+            <h2><i class="fa-solid fa-user-plus"></i> Step 1: Register a Test Nominee</h2>
+            <div class="form-group">
+                <label for="regName">Full Name</label>
+                <input type="text" id="regName" placeholder="Test Nominee" value="Test Nominee">
+            </div>
+            <div class="form-group">
+                <label for="regEmail">Email</label>
+                <input type="email" id="regEmail" placeholder="test@nominee.com" value="test@nominee.com">
+            </div>
+            <div class="form-group">
+                <label for="regPassword">Password</label>
+                <input type="password" id="regPassword" placeholder="password123" value="password123">
+            </div>
+            <div class="form-group">
+                <label for="regRelationship">Relationship</label>
+                <select id="regRelationship">
+                    <option value="Friend">Friend</option>
+                    <option value="Spouse">Spouse</option>
+                    <option value="Child">Child</option>
+                    <option value="Parent">Parent</option>
+                    <option value="Sibling">Sibling</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <button class="btn" onclick="testNomineeRegistration()">
+                <i class="fa-solid fa-user-plus"></i> Register Nominee
+            </button>
+            <div id="regResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Step 2: Login Nominee -->
+        <div class="debug-section">
+            <h2><i class="fa-solid fa-right-to-bracket"></i> Step 2: Login Nominee</h2>
+            <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" placeholder="test@nominee.com" value="test@nominee.com">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" placeholder="password123" value="password123">
+            </div>
+            <button class="btn" onclick="testNomineeLogin()">
+                <i class="fa-solid fa-right-to-bracket"></i> Login Nominee
+            </button>
+            <div id="loginResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Step 3: Test Protected Endpoints -->
+        <div class="debug-section">
+            <h2><i class="fa-solid fa-shield-halved"></i> Step 3: Test Protected Endpoints</h2>
+            <button class="btn" onclick="testNomineeProfile()">
+                <i class="fa-solid fa-user"></i> Get Nominee Profile
+            </button>
+            <button class="btn" onclick="testNomineeAssets()">
+                <i class="fa-solid fa-folder"></i> Get Nominee Assets
+            </button>
+            <button class="btn btn-secondary" onclick="clearStorage()">
+                <i class="fa-solid fa-trash"></i> Clear Storage
+            </button>
+            <div id="protectedResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Step 4: Check Local Storage -->
+        <div class="debug-section">
+            <h2><i class="fa-solid fa-database"></i> Step 4: Check Local Storage</h2>
+            <button class="btn" onclick="checkLocalStorage()">
+                <i class="fa-solid fa-eye"></i> Check Local Storage
+            </button>
+            <div id="storageResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Step 5: Test Token -->
+        <div class="debug-section">
+            <h2><i class="fa-solid fa-key"></i> Step 5: Test Token</h2>
+            <button class="btn" onclick="testToken()">
+                <i class="fa-solid fa-key"></i> Test Token Validity
+            </button>
+            <div id="tokenResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://eternavault.onrender.com';
+        let nomineeToken = null;
+
+        function showResult(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `result ${isError ? 'error' : 'success'}`;
+            element.textContent = message;
+        }
+
+        async function apiRequest(endpoint, options = {}) {
+            const defaultHeaders = {
+                'Content-Type': 'application/json',
+            };
+
+            if (nomineeToken) {
+                defaultHeaders['Authorization'] = `Bearer ${nomineeToken}`;
+            }
+
+            const config = {
+                headers: { ...defaultHeaders, ...options.headers },
+                ...options
+            };
+
+            try {
+                console.log('Making API request to:', `${API_BASE_URL}${endpoint}`);
+                console.log('Headers:', config.headers);
+                
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+                const data = await response.json();
+                
+                console.log('Response status:', response.status);
+                console.log('Response data:', data);
+                
+                if (!response.ok) {
+                    throw new Error(data.message || `HTTP ${response.status}`);
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        async function testNomineeRegistration() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const relationship = document.getElementById('regRelationship').value;
+            
+            try {
+                const response = await apiRequest('/routes/nominee/register', {
+                    method: 'POST',
+                    body: JSON.stringify({ name, email, password, relationship })
+                });
+                
+                showResult('regResult', `✅ Registration successful!\n${JSON.stringify(response, null, 2)}`, false);
+            } catch (error) {
+                showResult('regResult', `❌ Registration failed:\n${error.message}`, true);
+            }
+        }
+
+        async function testNomineeLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const response = await apiRequest('/routes/nominee/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+                
+                nomineeToken = response.token;
+                localStorage.setItem('nomineeToken', response.token);
+                localStorage.setItem('loggedInNominee', JSON.stringify(response));
+                
+                showResult('loginResult', `✅ Login successful!\nToken: ${response.token.substring(0, 50)}...\n${JSON.stringify(response, null, 2)}`, false);
+            } catch (error) {
+                showResult('loginResult', `❌ Login failed:\n${error.message}`, true);
+            }
+        }
+
+        async function testNomineeProfile() {
+            try {
+                const response = await apiRequest('/routes/nominee/profile');
+                showResult('protectedResult', `✅ Profile retrieved successfully!\n${JSON.stringify(response, null, 2)}`, false);
+            } catch (error) {
+                showResult('protectedResult', `❌ Profile request failed:\n${error.message}`, true);
+            }
+        }
+
+        async function testNomineeAssets() {
+            try {
+                const response = await apiRequest('/routes/nominee/assets');
+                showResult('protectedResult', `✅ Assets retrieved successfully!\nFound ${response.length} assets\n${JSON.stringify(response, null, 2)}`, false);
+            } catch (error) {
+                showResult('protectedResult', `❌ Assets request failed:\n${error.message}`, true);
+            }
+        }
+
+        function checkLocalStorage() {
+            const token = localStorage.getItem('nomineeToken');
+            const nominee = localStorage.getItem('loggedInNominee');
+            
+            let message = 'Local Storage Contents:\n\n';
+            message += `Nominee Token: ${token ? token.substring(0, 50) + '...' : 'Not found'}\n`;
+            message += `Logged In Nominee: ${nominee || 'Not found'}\n\n`;
+            
+            if (token) {
+                message += 'Token exists in localStorage ✅\n';
+            } else {
+                message += 'Token missing from localStorage ❌\n';
+            }
+            
+            if (nominee) {
+                message += 'Nominee data exists in localStorage ✅\n';
+            } else {
+                message += 'Nominee data missing from localStorage ❌\n';
+            }
+            
+            showResult('storageResult', message, false);
+        }
+
+        function testToken() {
+            const token = localStorage.getItem('nomineeToken');
+            
+            if (!token) {
+                showResult('tokenResult', '❌ No token found in localStorage', true);
+                return;
+            }
+            
+            try {
+                // Decode JWT token (without verification for debugging)
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const currentTime = Math.floor(Date.now() / 1000);
+                
+                let message = 'Token Analysis:\n\n';
+                message += `Token: ${token.substring(0, 50)}...\n`;
+                message += `Payload: ${JSON.stringify(payload, null, 2)}\n\n`;
+                message += `Issued at: ${new Date(payload.iat * 1000).toISOString()}\n`;
+                message += `Expires at: ${new Date(payload.exp * 1000).toISOString()}\n`;
+                message += `Current time: ${new Date().toISOString()}\n\n`;
+                
+                if (payload.exp < currentTime) {
+                    message += '❌ Token is EXPIRED\n';
+                } else {
+                    message += '✅ Token is VALID\n';
+                }
+                
+                showResult('tokenResult', message, false);
+            } catch (error) {
+                showResult('tokenResult', `❌ Token decode failed:\n${error.message}`, true);
+            }
+        }
+
+        function clearStorage() {
+            localStorage.removeItem('nomineeToken');
+            localStorage.removeItem('loggedInNominee');
+            nomineeToken = null;
+            showResult('protectedResult', '✅ Local storage cleared', false);
+        }
+
+        // Load token from localStorage on page load
+        window.onload = () => {
+            nomineeToken = localStorage.getItem('nomineeToken');
+            if (nomineeToken) {
+                console.log('Loaded token from localStorage:', nomineeToken.substring(0, 50) + '...');
+            }
+        };
+    </script>
+</body>
+</html>

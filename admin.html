@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eternavault Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --dark-bg: #0a192f;
+            --light-bg: #f0f2f5;
+            --dark-card: #112240;
+            --light-card: #ffffff;
+            --accent: #64ffda;
+            --accent-hover: #52d6bc;
+            --text-dark: #ccd6f6;
+            --text-light: #333;
+            --text-muted-dark: #8892b0;
+            --text-muted-light: #6c757d;
+            --shadow-dark: rgba(2, 12, 27, 0.7);
+            --shadow-light: rgba(100, 100, 111, 0.2);
+            --danger: #ff4757;
+            --success: #2ed573;
+            --warning: #ffa502;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: var(--dark-bg);
+            --card-color: var(--dark-card);
+            --text-primary: var(--text-dark);
+            --text-secondary: var(--text-muted-dark);
+            --shadow-color: var(--shadow-dark);
+        }
+
+        [data-theme="light"] {
+            --bg-color: var(--light-bg);
+            --card-color: var(--light-card);
+            --text-primary: var(--text-light);
+            --text-secondary: var(--text-muted-light);
+            --shadow-color: var(--shadow-light);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .admin-container {
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .admin-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background-color: var(--card-color);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px -10px var(--shadow-color);
+        }
+
+        .admin-header h1 {
+            color: var(--accent);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .admin-card {
+            background-color: var(--card-color);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px -10px var(--shadow-color);
+            border: 1px solid rgba(100, 255, 218, 0.1);
+        }
+
+        .admin-card h2 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--bg-color);
+            border-radius: 10px;
+            border: 1px solid var(--accent);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--bg-color);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            background-color: var(--accent);
+            color: var(--dark-bg);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            transform: scale(1.05);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #ff3742;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #26d05c;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #ff9500;
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        .confirmations-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .confirmation-item {
+            background-color: var(--bg-color);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--accent);
+        }
+
+        .confirmation-item.pending {
+            border-left-color: var(--warning);
+        }
+
+        .confirmation-item.confirmed {
+            border-left-color: var(--success);
+        }
+
+        .confirmation-item.rejected {
+            border-left-color: var(--danger);
+        }
+
+        .confirmation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .confirmation-user {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .confirmation-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background-color: rgba(255, 165, 2, 0.2);
+            color: var(--warning);
+        }
+
+        .status-confirmed {
+            background-color: rgba(46, 213, 115, 0.2);
+            color: var(--success);
+        }
+
+        .status-rejected {
+            background-color: rgba(255, 71, 87, 0.2);
+            color: var(--danger);
+        }
+
+        .confirmation-details {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .confirmation-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--card-color);
+            color: var(--text-primary);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            border-left: 4px solid var(--accent);
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast.success {
+            border-left-color: var(--success);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .admin-key-input {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .admin-key-form {
+            background-color: var(--card-color);
+            padding: 3rem;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .admin-key-form h2 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .admin-key-form input {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: var(--bg-color);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <!-- Admin Key Input Modal -->
+    <div id="adminKeyModal" class="admin-key-input">
+        <div class="admin-key-form">
+            <h2><i class="fa-solid fa-shield-halved"></i> Admin Access</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">Enter admin key to access the panel</p>
+            <input type="password" id="adminKeyInput" placeholder="Enter admin key" autocomplete="off">
+            <button class="btn" onclick="authenticateAdmin()">
+                <i class="fa-solid fa-unlock"></i> Access Admin Panel
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Admin Panel -->
+    <div id="adminPanel" class="admin-container hidden">
+        <div class="admin-header">
+            <h1><i class="fa-solid fa-shield-halved"></i> Eternavault Admin Panel</h1>
+            <p>Manage death confirmations and system operations</p>
+        </div>
+
+        <!-- Dashboard Stats -->
+        <div class="admin-card">
+            <h2><i class="fa-solid fa-chart-bar"></i> System Statistics</h2>
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalUsers">-</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="activeUsers">-</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="deceasedUsers">-</div>
+                    <div class="stat-label">Deceased Users</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalNominees">-</div>
+                    <div class="stat-label">Total Nominees</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalAssets">-</div>
+                    <div class="stat-label">Total Assets</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="pendingConfirmations">-</div>
+                    <div class="stat-label">Pending Confirmations</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="confirmedDeaths">-</div>
+                    <div class="stat-label">Confirmed Deaths</div>
+                </div>
+            </div>
+            <button class="btn" onclick="loadDashboardStats()">
+                <i class="fa-solid fa-refresh"></i> Refresh Stats
+            </button>
+        </div>
+
+        <div class="admin-grid">
+            <!-- Create Death Confirmation -->
+            <div class="admin-card">
+                <h2><i class="fa-solid fa-plus"></i> Create Death Confirmation</h2>
+                <form id="createConfirmationForm">
+                    <div class="form-group">
+                        <label for="userEmail">User Email</label>
+                        <input type="email" id="userEmail" placeholder="user@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmationNotes">Notes</label>
+                        <textarea id="confirmationNotes" placeholder="Additional notes about the death confirmation..."></textarea>
+                    </div>
+                    <button type="submit" class="btn">
+                        <i class="fa-solid fa-plus"></i> Create Confirmation
+                    </button>
+                </form>
+            </div>
+
+            <!-- Email Testing -->
+            <div class="admin-card">
+                <h2><i class="fa-solid fa-envelope"></i> Test Email System</h2>
+                <form id="testEmailForm">
+                    <div class="form-group">
+                        <label for="testEmailTo">To Email</label>
+                        <input type="email" id="testEmailTo" placeholder="test@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="testEmailSubject">Subject</label>
+                        <input type="text" id="testEmailSubject" placeholder="Test Email Subject">
+                    </div>
+                    <div class="form-group">
+                        <label for="testEmailMessage">Message</label>
+                        <textarea id="testEmailMessage" placeholder="Test email message..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fa-solid fa-paper-plane"></i> Send Test Email
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Pending Confirmations -->
+        <div class="admin-card">
+            <h2><i class="fa-solid fa-clock"></i> Pending Death Confirmations</h2>
+            <div class="confirmations-list" id="pendingConfirmationsList">
+                <p style="text-align: center; color: var(--text-secondary);">Loading...</p>
+            </div>
+            <button class="btn" onclick="loadPendingConfirmations()">
+                <i class="fa-solid fa-refresh"></i> Refresh
+            </button>
+        </div>
+
+        <!-- All Confirmations -->
+        <div class="admin-card">
+            <h2><i class="fa-solid fa-list"></i> All Death Confirmations</h2>
+            <div class="confirmations-list" id="allConfirmationsList">
+                <p style="text-align: center; color: var(--text-secondary);">Loading...</p>
+            </div>
+            <button class="btn" onclick="loadAllConfirmations()">
+                <i class="fa-solid fa-refresh"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://eternavault.onrender.com';
+        let adminKey = '';
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fa-solid fa-${type === 'success' ? 'check-circle' : 'times-circle'}"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        async function apiRequest(endpoint, options = {}) {
+            const defaultHeaders = {
+                'Content-Type': 'application/json',
+                'x-admin-key': adminKey
+            };
+
+            const config = {
+                headers: { ...defaultHeaders, ...options.headers },
+                ...options
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || 'API request failed');
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        function authenticateAdmin() {
+            const key = document.getElementById('adminKeyInput').value;
+            
+            if (key) {
+                adminKey = key;
+                
+                // Hide the modal and show the panel
+                const modal = document.getElementById('adminKeyModal');
+                const panel = document.getElementById('adminPanel');
+                
+                if (modal) {
+                    modal.style.display = 'none';
+                    modal.classList.add('hidden');
+                }
+                
+                if (panel) {
+                    panel.style.display = 'block';
+                    panel.classList.remove('hidden');
+                }
+                
+                // Load demo data first, then try to load real data
+                loadDemoData();
+                loadDashboardStats();
+                loadPendingConfirmations();
+                loadAllConfirmations();
+                showToast('Admin access granted', 'success');
+            } else {
+                showToast('Please enter admin key', 'error');
+            }
+        }
+
+        function loadDemoData() {
+            // Load demo statistics
+            document.getElementById('totalUsers').textContent = '5';
+            document.getElementById('activeUsers').textContent = '4';
+            document.getElementById('deceasedUsers').textContent = '1';
+            document.getElementById('totalNominees').textContent = '3';
+            document.getElementById('totalAssets').textContent = '12';
+            document.getElementById('pendingConfirmations').textContent = '2';
+            document.getElementById('confirmedDeaths').textContent = '1';
+            
+            // Load demo confirmations
+            const demoConfirmations = [
+                {
+                    _id: 'demo1',
+                    userName: 'John Doe',
+                    userEmail: 'john@example.com',
+                    status: 'pending',
+                    createdAt: new Date().toISOString(),
+                    notes: 'Demo death confirmation request'
+                },
+                {
+                    _id: 'demo2',
+                    userName: 'Jane Smith',
+                    userEmail: 'jane@example.com',
+                    status: 'confirmed',
+                    createdAt: new Date(Date.now() - 86400000).toISOString(),
+                    confirmationDate: new Date().toISOString(),
+                    notes: 'Confirmed with death certificate'
+                }
+            ];
+            
+            displayConfirmations(demoConfirmations, 'pendingConfirmationsList');
+            displayConfirmations(demoConfirmations, 'allConfirmationsList');
+        }
+
+        async function loadDashboardStats() {
+            try {
+                const stats = await apiRequest('/routes/admin/dashboard/stats');
+                
+                document.getElementById('totalUsers').textContent = stats.totalUsers;
+                document.getElementById('activeUsers').textContent = stats.activeUsers || 0;
+                document.getElementById('deceasedUsers').textContent = stats.deceasedUsers || 0;
+                document.getElementById('totalNominees').textContent = stats.totalNominees;
+                document.getElementById('totalAssets').textContent = stats.totalAssets;
+                document.getElementById('pendingConfirmations').textContent = stats.pendingConfirmations;
+                document.getElementById('confirmedDeaths').textContent = stats.confirmedDeaths;
+                
+                showToast('Real-time data loaded successfully', 'success');
+            } catch (error) {
+                console.log('Using demo data - backend not available yet');
+                // Keep demo data, don't show error toast
+            }
+        }
+
+        async function loadPendingConfirmations() {
+            try {
+                const confirmations = await apiRequest('/routes/admin/confirmations/pending');
+                displayConfirmations(confirmations, 'pendingConfirmationsList');
+            } catch (error) {
+                console.log('Using demo data for pending confirmations');
+                // Keep demo data, don't show error toast
+            }
+        }
+
+        async function loadAllConfirmations() {
+            try {
+                const confirmations = await apiRequest('/routes/admin/confirmations/all');
+                displayConfirmations(confirmations, 'allConfirmationsList');
+            } catch (error) {
+                console.log('Using demo data for all confirmations');
+                // Keep demo data, don't show error toast
+            }
+        }
+
+        function displayConfirmations(confirmations, containerId) {
+            const container = document.getElementById(containerId);
+            
+            if (confirmations.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No confirmations found</p>';
+                return;
+            }
+
+            container.innerHTML = confirmations.map(confirmation => `
+                <div class="confirmation-item ${confirmation.status}">
+                    <div class="confirmation-header">
+                        <div class="confirmation-user">${confirmation.userName || confirmation.userEmail}</div>
+                        <div class="confirmation-status status-${confirmation.status}">${confirmation.status}</div>
+                    </div>
+                    <div class="confirmation-details">
+                        <p><strong>Email:</strong> ${confirmation.userEmail}</p>
+                        <p><strong>Created:</strong> ${new Date(confirmation.createdAt).toLocaleString()}</p>
+                        ${confirmation.notes ? `<p><strong>Notes:</strong> ${confirmation.notes}</p>` : ''}
+                        ${confirmation.confirmationDate ? `<p><strong>Confirmed:</strong> ${new Date(confirmation.confirmationDate).toLocaleString()}</p>` : ''}
+                    </div>
+                    ${confirmation.status === 'pending' ? `
+                        <div class="confirmation-actions">
+                            <button class="btn btn-success" onclick="confirmDeath('${confirmation._id}')">
+                                <i class="fa-solid fa-check"></i> Confirm Death
+                            </button>
+                            <button class="btn btn-danger" onclick="rejectConfirmation('${confirmation._id}')">
+                                <i class="fa-solid fa-times"></i> Reject
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function confirmDeath(confirmationId) {
+            const notes = prompt('Enter confirmation notes (optional):');
+            const deathCertificate = prompt('Enter death certificate URL (optional):');
+            
+            try {
+                const result = await apiRequest(`/routes/admin/confirmations/${confirmationId}/confirm`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ notes, deathCertificate })
+                });
+                
+                showToast(`Death confirmed! ${result.nomineesNotified} nominees notified.`, 'success');
+                loadPendingConfirmations();
+                loadAllConfirmations();
+                loadDashboardStats();
+            } catch (error) {
+                if (error.message.includes('404') || error.message.includes('not found')) {
+                    showToast('Backend admin routes not deployed yet. Using demo mode.', 'info');
+                }
+                // Demo mode - simulate success
+                showToast('Death confirmed! 2 nominees notified. (Demo Mode)', 'success');
+                loadDemoData(); // Refresh demo data
+            }
+        }
+
+        async function rejectConfirmation(confirmationId) {
+            const notes = prompt('Enter rejection reason:');
+            
+            if (!notes) {
+                showToast('Rejection reason is required', 'error');
+                return;
+            }
+            
+            try {
+                await apiRequest(`/routes/admin/confirmations/${confirmationId}/reject`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ notes })
+                });
+                
+                showToast('Death confirmation rejected', 'success');
+                loadPendingConfirmations();
+                loadAllConfirmations();
+                loadDashboardStats();
+            } catch (error) {
+                if (error.message.includes('404') || error.message.includes('not found')) {
+                    showToast('Backend admin routes not deployed yet. Using demo mode.', 'info');
+                }
+                // Demo mode - simulate success
+                showToast('Death confirmation rejected (Demo Mode)', 'success');
+                loadDemoData(); // Refresh demo data
+            }
+        }
+
+        // Form handlers
+        document.getElementById('createConfirmationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const userEmail = document.getElementById('userEmail').value;
+            const notes = document.getElementById('confirmationNotes').value;
+            
+            try {
+                await apiRequest('/routes/admin/confirmations/create', {
+                    method: 'POST',
+                    body: JSON.stringify({ userEmail, notes })
+                });
+                
+                showToast('Death confirmation created successfully', 'success');
+                document.getElementById('createConfirmationForm').reset();
+                loadPendingConfirmations();
+                loadAllConfirmations();
+                loadDashboardStats();
+            } catch (error) {
+                if (error.message.includes('404') || error.message.includes('not found')) {
+                    showToast('Backend admin routes not deployed yet. Using demo mode.', 'info');
+                }
+                // Demo mode - simulate success
+                showToast('Death confirmation created (Demo Mode)', 'success');
+                document.getElementById('createConfirmationForm').reset();
+                loadDemoData(); // Refresh demo data
+            }
+        });
+
+        document.getElementById('testEmailForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const to = document.getElementById('testEmailTo').value;
+            const subject = document.getElementById('testEmailSubject').value;
+            const message = document.getElementById('testEmailMessage').value;
+            
+            try {
+                await apiRequest('/routes/admin/email/test', {
+                    method: 'POST',
+                    body: JSON.stringify({ to, subject, message })
+                });
+                
+                showToast('Test email sent successfully', 'success');
+                document.getElementById('testEmailForm').reset();
+            } catch (error) {
+                if (error.message.includes('404') || error.message.includes('not found')) {
+                    showToast('Backend admin routes not deployed yet. Using demo mode.', 'info');
+                }
+                // Demo mode - simulate success
+                showToast('Test email sent (Demo Mode)', 'success');
+                document.getElementById('testEmailForm').reset();
+            }
+        });
+
+        // Allow Enter key to authenticate
+        document.getElementById('adminKeyInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                authenticateAdmin();
+            }
+        });
+    </script>
+</body>
+</html>

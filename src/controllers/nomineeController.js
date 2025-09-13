@@ -7,6 +7,8 @@ const generateToken = require('../utils/generateToken');
 const registerNominee = async (req, res) => {
     const { name, email, password, relationship, phoneNumber, address } = req.body;
 
+    console.log('Nominee registration request:', { name, email, relationship, phoneNumber, address });
+
     if (!name || !email || !password || !relationship) {
         return res.status(400).json({ message: 'Please enter all required fields' });
     }
@@ -27,6 +29,8 @@ const registerNominee = async (req, res) => {
             address
         });
 
+        console.log('Nominee created successfully:', nominee._id);
+
         if (nominee) {
             res.status(201).json({
                 _id: nominee._id,
@@ -39,6 +43,7 @@ const registerNominee = async (req, res) => {
             res.status(400).json({ message: 'Invalid nominee data' });
         }
     } catch (error) {
+        console.error('Error registering nominee:', error);
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
 };

@@ -32,11 +32,8 @@ const nomineeSchema = new mongoose.Schema({
         match: [/^[\+]?[1-9][\d]{0,15}$/, 'Please provide a valid phone number']
     },
     address: {
-        street: String,
-        city: String,
-        state: String,
-        zipCode: String,
-        country: String
+        type: String,
+        trim: true
     },
     status: {
         type: String,

@@ -35,7 +35,8 @@ const getAllConfirmations = async (req, res) => {
 // Confirm death and notify nominees
 const confirmDeath = async (req, res) => {
     try {
-        const { confirmationId, notes, deathCertificate } = req.body;
+        const { id: confirmationId } = req.params; // Get ID from URL params
+        const { notes, deathCertificate } = req.body;
         
         const confirmation = await DeathConfirmation.findById(confirmationId)
             .populate('user', 'name email');
@@ -91,7 +92,7 @@ const confirmDeath = async (req, res) => {
                         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                             <h2 style="color: #64ffda;">Eternavault - Digital Asset Access</h2>
                             <p>Dear ${nominee.name},</p>
-                            <p>We are writing to inform you that you have been designated as a nominee for digital assets belonging to <strong>${confirmation.userName}</strong>.</p>
+                            <p>We are writing to inform you that you have been designated as a nominee for digital assets belonging to <strong>${confirmation.user.name}</strong>.</p>
                             <p>Following the confirmation of their passing, you now have access to the following digital assets:</p>
                             
                             <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
@@ -145,7 +146,8 @@ const confirmDeath = async (req, res) => {
 // Reject death confirmation
 const rejectDeathConfirmation = async (req, res) => {
     try {
-        const { confirmationId, notes } = req.body;
+        const { id: confirmationId } = req.params; // Get ID from URL params
+        const { notes } = req.body;
         
         const confirmation = await DeathConfirmation.findById(confirmationId);
         

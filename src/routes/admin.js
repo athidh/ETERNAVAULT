@@ -22,6 +22,15 @@ const adminAuth = (req, res, next) => {
     }
 };
 
+// Test endpoint (no auth required for testing)
+router.get('/test', (req, res) => {
+    res.json({ 
+        message: 'Admin routes are working!', 
+        timestamp: new Date().toISOString(),
+        status: 'success'
+    });
+});
+
 // Apply admin authentication to all routes
 router.use(adminAuth);
 

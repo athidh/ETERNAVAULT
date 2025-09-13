@@ -80,6 +80,7 @@ const getNomineeProfile = async (req, res) => {
 const getNomineeAssets = async (req, res) => {
     try {
         console.log('Getting assets for nominee:', req.nominee.id);
+        console.log('Nominee email:', req.nominee.email);
         
         // Find assets where the nominee's email is in the legacyContactEmail field
         const assets = await Asset.find({ 
@@ -87,6 +88,7 @@ const getNomineeAssets = async (req, res) => {
         }).populate('owner', 'name email');
         
         console.log('Found assets for nominee:', assets.length);
+        console.log('Assets:', assets);
         res.json(assets);
     } catch (error) {
         console.error('Error getting nominee assets:', error);

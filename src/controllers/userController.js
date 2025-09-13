@@ -6,9 +6,9 @@ const executorService = require('../services/executorService');
 
 //    Register a new user
 const registerUser = async (req, res) => {
-    const { email, password } = req.body;
+    const { name, email, password } = req.body;
 
-    if (!email || !password) {
+    if (!name || !email || !password) {
         return res.status(400).json({ message: 'Please enter all fields' });
     }
 
@@ -20,6 +20,7 @@ const registerUser = async (req, res) => {
         }
 
         const user = await User.create({
+            name,
             email,
             password,
         });
@@ -27,6 +28,7 @@ const registerUser = async (req, res) => {
         if (user) {
             res.status(201).json({
                 _id: user._id,
+                name: user.name,
                 email: user.email,
                 token: generateToken(user._id),
             });
@@ -48,6 +50,7 @@ const loginUser = async (req, res) => {
         if (user && (await bcrypt.compare(password, user.password))) {
             res.json({
                 _id: user._id,
+                name: user.name,
                 email: user.email,
                 token: generateToken(user._id),
             });
@@ -60,12 +63,14 @@ const loginUser = async (req, res) => {
 };
 
 // Add a new social media asset
-
 const addAsset = async (req, res) => {
     const { platform, profileUrl, instruction, legacyContactEmail } = req.body;
     
     // The user's ID comes from the 'protect' middleware
     const userId = req.user.id;
+
+    console.log('Adding asset for user:', userId);
+    console.log('Asset data:', { platform, profileUrl, instruction, legacyContactEmail });
 
     try {
         const asset = new Asset({
@@ -77,9 +82,11 @@ const addAsset = async (req, res) => {
         });
 
         const createdAsset = await asset.save();
+        console.log('Asset created successfully:', createdAsset._id);
         res.status(201).json(createdAsset);
 
     } catch (error) {
+        console.error('Error creating asset:', error);
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
 };
@@ -87,9 +94,12 @@ const addAsset = async (req, res) => {
 //   Get all assets for a user
 const getUserAssets = async (req, res) => {
     try {
+        console.log('Getting assets for user:', req.user.id);
         const assets = await Asset.find({ owner: req.user.id });
+        console.log('Found assets:', assets.length);
         res.json(assets);
     } catch (error) {
+        console.error('Error getting user assets:', error);
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
 };

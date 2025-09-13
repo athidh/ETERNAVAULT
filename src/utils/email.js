@@ -71,6 +71,7 @@ const sendMemorializationRequest = async (data) => {
 
 
 module.exports = {
+    sendEmail,
     sendLegacyContactNotification,
     sendMemorializationRequest,
 };

@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors'); 
 const userRoutes = require('./src/routes/user');
 const nomineeRoutes = require('./src/routes/nominee');
+const adminRoutes = require('./src/routes/admin');
 const app = express();
 
 app.use(cors()); 
@@ -23,6 +24,7 @@ app.get('/', (req, res) => {
 
 app.use('/routes/user', userRoutes);
 app.use('/routes/nominee', nomineeRoutes);
+app.use('/routes/admin', adminRoutes);
 
 module.exports = app;
 

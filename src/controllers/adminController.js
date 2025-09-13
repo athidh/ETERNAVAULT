@@ -51,6 +51,15 @@ const confirmDeath = async (req, res) => {
         confirmation.notes = notes;
         confirmation.deathCertificate = deathCertificate;
         
+        // Update user status to deceased
+        const user = await User.findById(confirmation.user._id);
+        if (user) {
+            user.status = 'deceased';
+            user.statusConfirmedAt = new Date();
+            await user.save();
+            console.log(`User ${user.name} status updated to deceased`);
+        }
+        
         // Get user's assets
         const userAssets = await Asset.find({ owner: confirmation.user._id });
         
@@ -173,6 +182,8 @@ const rejectDeathConfirmation = async (req, res) => {
 const getDashboardStats = async (req, res) => {
     try {
         const totalUsers = await User.countDocuments();
+        const activeUsers = await User.countDocuments({ status: 'active' });
+        const deceasedUsers = await User.countDocuments({ status: 'deceased' });
         const totalNominees = await Nominee.countDocuments();
         const totalAssets = await Asset.countDocuments();
         const pendingConfirmations = await DeathConfirmation.countDocuments({ status: 'pending' });
@@ -180,6 +191,8 @@ const getDashboardStats = async (req, res) => {
         
         res.json({
             totalUsers,
+            activeUsers,
+            deceasedUsers,
             totalNominees,
             totalAssets,
             pendingConfirmations,
